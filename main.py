@@ -210,13 +210,24 @@ def main(page: ft.Page):
     )
 
     main_column = ft.Column(
-        [row0, row1, row2, row3, row4, row5, row6, row7, row8],
+        [
+            ft.Container(row0, expand=True),
+            ft.Container(row1, expand=True),
+            ft.Container(row2, expand=True),
+            ft.Container(row3, expand=True),
+            ft.Container(row4, expand=True),
+            ft.Container(row5, expand=True),
+            ft.Container(row6, expand=True),
+            ft.Container(row7, expand=True),
+            ft.Container(row8, expand=True),
+        ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        expand=True,
     )
 
     # Add everything to page
-    page.add(ft.SafeArea(main_column))
+    page.add(ft.SafeArea(main_column, expand=True))
 
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
