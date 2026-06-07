@@ -352,31 +352,33 @@ class GenUIChatApp(ft.Column):
         )
 
     def process_agent_turn(self, prompt_text: str):
-        """Envoie le message au modèle LangGraph et affiche les réponses."""
+        """Envoie le message au modèle LangGraph et affiche proprement les réponses."""
+        # 1. On enregistre le message utilisateur de manière standard
         self.chat_history.append(HumanMessage(content=prompt_text))
         agent_state = AgentState(messages=self.chat_history, last_ui=None)
 
-        # Invocation du graphe (exécute l'assistant, l'outil, puis le rendu d'UI)
+        # 2. Invocation du graphe
         result = agent_app.invoke(agent_state)
 
-        # Extraction et filtrage de TOUS les messages générés durant ce tour
-        for msg in result["messages"]:
-            # On ne traite que les messages de l'IA qui ne sont pas déjà dans notre historique local
-            if isinstance(msg, AIMessage) and msg not in self.chat_history:
-                # Extraction et nettoyage strict du texte
-                raw_content = msg.content
-                if isinstance(raw_content, str):
-                    clean_text = raw_content.strip()
-                else:
-                    clean_text = str(raw_content).strip()
+        # 3. CORRECTION : On remplace complètement notre historique local par l'historique
+        # officiel, complet et valide retourné par LangGraph (incluant tous les tool_calls)
+        self.chat_history = result["messages"]
 
-                # CRITIQUE : On ignore complètement le message si le texte est vide (ex: "\n\n")
-                if clean_text:
-                    self.chat_history.append(AIMessage(content=clean_text))
-                    self.append_ai_bubble(clean_text)
-                    logging.info(f"AI text bubble added: {clean_text}")
+        # 4. Affichage visuel dans Flet (Le nettoyage se fait UNIQUEMENT pour l'écran)
+        # On cherche les nouveaux messages de l'assistant pour créer les bulles
+        # Si un message a un texte vide (comme "\n\n" lors d'un tool call), Flet ne dessine rien
+        ai_messages = [msg for msg in result["messages"] if isinstance(msg, AIMessage)]
+        if ai_messages:
+            # On récupère le contenu du tout dernier message de l'IA généré à la fin du graphe
+            raw_content = ai_messages[-1].content
+            clean_text = str(raw_content).strip()
 
-        # Affichage du composant dynamique (carte météo ou graphique flet_charts) s'il existe
+            # On n'affiche la bulle visuelle QUE s'il y a un vrai texte à lire
+            if clean_text:
+                self.append_ai_bubble(clean_text)
+                logging.info(f"Visual AI bubble added: {clean_text}")
+
+        # 5. Affichage du composant dynamique GenUI
         ui_widget = self.build_ui_widget(result.get("last_ui"))
         if ui_widget:
             self.chat_view.controls.append(

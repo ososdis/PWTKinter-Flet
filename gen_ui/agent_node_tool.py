@@ -23,7 +23,7 @@ def setup_llm_model(base_url: str, api_key: str, model_name: str | None):
     os.environ["OPENAI_BASE_URL"] = base_url
 
 
-# --- DÉFINITION DES TOOLS LANGCHAIN (CONFORME À LA DOC) ---
+# --- DÉFINITION DES TOOLS LANGCHAIN ---
 
 
 @tool
@@ -127,43 +127,47 @@ def assistant_node(state: AgentState):
 
 # NŒUD 3 : Construit l'interface à partir des messages d'outils présents dans l'état
 def render_ui_node(state: AgentState):
+    """Génère l'interface visuelle Flet UNIQUEMENT si un outil vient d'être exécuté au cours de ce tour."""
     if not state.messages:
         return {"last_ui": UIComponentSchema(component_type="none")}
 
-    # On parcourt l'historique récent à la recherche du dernier résultat d'outil (ToolMessage)
-    for msg in reversed(state.messages):
-        if isinstance(msg, ToolMessage):
-            try:
-                tool_output = json.loads(f"{msg.content}")
+    # On récupère le TOUT DERNIER message de la conversation
+    last_message = state.messages[-1]
 
-                # Rendu dynamique automatique basé sur la structure de sortie du Tool
-                if "values" in tool_output:
-                    return {
-                        "last_ui": UIComponentSchema(
-                            component_type="bar_chart",
-                            title=tool_output["title"],
-                            chart_labels=tool_output["labels"],
-                            chart_values=tool_output["values"],
-                            action_button=UIButtonSchema(
-                                text="Exporter", action_key="export"
-                            ),
-                        )
-                    }
-                elif "temp" in tool_output:
-                    return {
-                        "last_ui": UIComponentSchema(
-                            component_type="weather_card",
-                            title=tool_output["title"],
-                            weather_city=tool_output["title"].split()[-1],
-                            weather_temp=tool_output["temp"],
-                            action_button=UIButtonSchema(
-                                text="Actualiser", action_key="refresh"
-                            ),
-                        )
-                    }
-            except Exception as e:
-                logging.error(f"Erreur de décodage du ToolMessage: {e}")
+    # Si le tout dernier message est un ToolMessage, cela signifie qu'un outil
+    # vient de tourner à l'instant. On génère le widget adéquat.
+    if isinstance(last_message, ToolMessage):
+        try:
+            tool_output = json.loads(f"{last_message.content}")
 
+            # Cas A : Outil Graphique
+            if "values" in tool_output:
+                ui_comp = UIComponentSchema(
+                    component_type="bar_chart",
+                    title=tool_output["title"],
+                    chart_labels=tool_output["labels"],
+                    chart_values=tool_output["values"],
+                    action_button=UIButtonSchema(text="Exporter", action_key="export"),
+                )
+                return {"last_ui": ui_comp}
+
+            # Cas B : Outil Météo
+            elif "temp" in tool_output:
+                ui_comp = UIComponentSchema(
+                    component_type="weather_card",
+                    title=tool_output["title"],
+                    weather_city=tool_output["title"].split()[-1],
+                    weather_temp=tool_output["temp"],
+                    action_button=UIButtonSchema(
+                        text="Actualiser", action_key="refresh"
+                    ),
+                )
+                return {"last_ui": ui_comp}
+        except Exception as e:
+            logging.error(f"Error parsing tool message: {e}")
+
+    # SÉCURITÉ CRITIQUE : Si le dernier message n'est pas un outil (ex: discussion simple),
+    # on écrase explicitement l'état précédent pour ne pas ré-afficher l'ancien widget.
     return {"last_ui": UIComponentSchema(component_type="none")}
 
 
