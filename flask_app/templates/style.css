@@ -1,0 +1,203 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-beige: #FDF7F0;
+    --bg-red: #7B1E1E;
+    /* Le rouge foncé de la maquette */
+    --text-dark: #333333;
+    --text-light: #FFFFFF;
+    --font-main: 'Helvetica', sans-serif;
+    --font-serif: 'Georgia', serif;
+    /* Pour imiter le style élégant */
+}
+
+body {
+    font-family: var(--font-main);
+    color: var(--text-dark);
+    background-color: var(--bg-beige);
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    /* Espace entre logo et menu */
+    align-items: center;
+    padding: 20px 50px;
+    background-color: #fff;
+    /* Le header semble blanc ou beige très clair */
+}
+
+header .logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--bg-red);
+    /* Logo rouge ? Ou noir */
+}
+
+header nav ul {
+    display: flex;
+    gap: 20px;
+    /* Espace entre les liens */
+    font-size: 0.9rem;
+}
+
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* Centrer la section */
+    gap: 40px;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.hero-image {
+    flex: 1;
+    /* Prend 50% de l'espace disponible */
+}
+
+.hero-image img {
+    width: 100%;
+    border-radius: 8px;
+    /* Petit arrondi sympa */
+    box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
+    /* Effet de style */
+}
+
+/* Typographie du Hero */
+.hero h1 {
+    font-family: var(--font-serif);
+    font-size: 3rem;
+    color: var(--bg-red);
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: var(--bg-red);
+    color: var(--text-light);
+    border: none;
+    padding: 12px 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: transform 0.2s;
+    /* Prépare l'animation pour le bonus */
+}
+
+.courses {
+    background-color: var(--bg-red);
+    color: var(--text-light);
+    padding: 60px 50px;
+}
+
+.courses .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.courses h2 {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+/* La grille de cartes */
+.cards-grid {
+    display: flex;
+    gap: 20px;
+    margin-top: 40px;
+    overflow-x: auto;
+    /* Permet le scroll si trop de cartes */
+    padding-bottom: 20px;
+    /* Espace pour la scrollbar éventuelle */
+}
+
+.card {
+    background: transparent;
+    min-width: 250px;
+    flex-shrink: 0;
+    /* Empêche les cartes de s'écraser */
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.card h3 {
+    margin-top: 10px;
+    font-size: 1.1rem;
+}
+
+.card p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Règle pour les écrans inférieurs à 768px */
+@media (max-width: 768px) {
+
+    /* 1. On empile le header */
+    header {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    header nav ul {
+        margin-top: 15px;
+        gap: 15px;
+        font-size: 0.8rem;
+    }
+
+    /* 2. On empile la section Hero */
+    .hero {
+        flex-direction: column;
+        /* Image sous le texte */
+        padding: 40px 20px;
+        text-align: center;
+        /* Centre le texte */
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        /* Titre plus petit sur mobile */
+    }
+
+    /* 3. Ajustements pour la section Cours */
+    .courses {
+        padding: 40px 20px;
+    }
+}
+
+.courses h2 {
+    font-size: 1.8rem;
+}
+
+/* Change la couleur et grossit légèrement le bouton au survol */
+.btn-primary:hover {
+    background-color: #5a1515;
+    /* Une version plus sombre du rouge */
+    transform: scale(1.05);
+    /* Grossit de 5% */
+}

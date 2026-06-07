@@ -12,6 +12,17 @@ import flet as ft
 
 
 # main function
+def main_comp(rows: list[ft.Row | ft.Text]):
+    main_column = ft.Column(
+        [ft.Container(row, expand=True) for row in rows],
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        expand=True,
+    )
+    return main_column
+
+
+# main function
 def main(page: ft.Page):
 
     page.title = "Rock Paper Scissors"
@@ -209,22 +220,7 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER,
     )
 
-    main_column = ft.Column(
-        [
-            ft.Container(row0, expand=True),
-            ft.Container(row1, expand=True),
-            ft.Container(row2, expand=True),
-            ft.Container(row3, expand=True),
-            ft.Container(row4, expand=True),
-            ft.Container(row5, expand=True),
-            ft.Container(row6, expand=True),
-            ft.Container(row7, expand=True),
-            ft.Container(row8, expand=True),
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        expand=True,
-    )
+    main_column = main_comp(rows=[row0, row1, row2, row3, row4, row5, row6, row7, row8])
 
     # Add everything to page
     page.add(ft.SafeArea(main_column, expand=True))
